@@ -19,13 +19,12 @@ class UI(Frame):
         self.initcol=5
         self.OS = platform.system().lower()
         self.debug = False
+        #self.num=StringVar()
         #实体标签
         self.label=['B','I','O']
         self.pos_label=['Nr','Ns','Ni','Nt','Nd','Nm','Np']
 		#用于存储撤销信息
         self.backdict={}
-		
-
 		
         #参考实体信息
         self.entities = [
@@ -81,14 +80,24 @@ class UI(Frame):
         self.button_import.grid(row=2, column=35)
         self.button_export = Button(self.master, text="导出文件",command=self.export_file)
         self.button_export.grid(row=4, column=35)
-        self.button_save=Button(self.master,text="undo操作")
+        self.button_save=Button(self.master,text="保留按钮",command=self.back_action)
         self.button_save.grid(row=6,column=35)
-        self.button_back = Button(self.master, text="撤销操作",command=self.back_action)
+        self.button_back = Button(self.master, text="撤销操作",command=self.back_random)
         self.button_back.grid(row=8, column=35)
         self.button_next=Button(self.master,text="上一句",command=self.fore_button)
         self.button_next.grid(row=10,column=35)
         self.button_fore=Button(self.master,text="下一句",command=self.next_button)
         self.button_fore.grid(row=12,column=35)
+        self.sum_label1=Label(self.master, font=(None, 10,"bold"),text="总句数：(条)")
+        self.sum_label1.grid(row=14,column=35)
+        self.text_sum=Text(self.master, font=(None, 15),width=5,height=1)
+        self.text_sum.grid(row=16,column=35)
+        self.sum_label3=Label(self.master, font=(None, 10,"bold"),text="剩余句数：(条)")
+        self.sum_label3.grid(row=18,column=35)
+        self.text_ret=Text(self.master, font=(None, 15),width=5,height=1)
+        self.text_ret.grid(row=20,column=35)
+     
+		
 
         #实体类型, E 右对齐，W 左对齐，
         self.label = Label(self.master,font=(None,15,"bold"), text="实体类型选择：")
@@ -145,7 +154,27 @@ class UI(Frame):
         self.text.bind('<Control-Key-f>', self.key_button_number)
         self.text.bind('<Control-Key-g>', self.key_button_percege)
         #self.text.bind('', self.textReturnEnter)
-
+    def back_random(self):
+		sent=self.text.get(0.0,END)
+		num_buff=add_color(sent)
+		if len(num_buff)>0:
+			current_location=self.text.index(SEL_LAST)
+			#print current_location
+			num_current=int(current_location.split('.')[1])
+			for ind in num_buff:
+				ind1=int(ind[0].split('.')[1])
+				ind2=int(ind[1].split('.')[1])
+				if ind1<=num_current<ind2:
+					word=sent[ind1:ind2]
+					word=word[word.index('[@')+2:word.index('#')]
+					self.text.delete(ind[0],ind[1])
+					self.text.insert(ind[0],word)
+					break
+		else:
+			pass
+				
+			
+		
 
     #对导入的文件进行处理
     def prepro(self,line,num):
@@ -230,15 +259,15 @@ class UI(Frame):
             self.text.insert(tmp[1],tmp[-1][2:tmp[-1].index('#')])
 		
 	'''
-        print len(self.backdict[self.index])
-        print self.index
+        #print len(self.backdict[self.index])
+        #print self.index
         if len(self.backdict[self.index])==0:
             #print self.text.get(0.0, END)
             pass
         else:
             #print self.text.get(0.0,END)
             tmp=self.backdict[self.index][-1]
-            print tmp[0],'\n',tmp[1],'\n',tmp[2]
+            #print tmp[0],'\n',tmp[1],'\n',tmp[2]
             self.backdict[self.index]=self.backdict[self.index][:-1]
             self.text.delete(tmp[1],u'1.'+str(int(tmp[1].split('.')[-1])+len(tmp[-1])))
             self.text.insert(tmp[1],tmp[-1][2:tmp[-1].index('#')])
@@ -270,7 +299,7 @@ class UI(Frame):
         self.button_entity_action()
         self.text.delete(self.firstSelection_index, self.cursor_index)
         self.text.insert(self.firstSelection_index, u'[@' + self.text_cursor + u'#' + entity + u'*]', color)
-        print self.firstSelection_index
+        #print self.firstSelection_index
         self.backdict[self.index].append([self.text.get(0.0, END), self.firstSelection_index,
                          u'[@' + self.text_cursor + u'#' + entity + u'*]'])
 		#self.backdict[self.index].append([self.text.get(0.0, END), self.firstSelection_index,
@@ -281,7 +310,7 @@ class UI(Frame):
         if self.flag and self.leftAction_flag:
             self.firstSelection_index = self.text.index(SEL_FIRST)
             self.cursor_index = self.text.index(SEL_LAST)
-            print self.firstSelection_index, self.cursor_index
+            #print self.firstSelection_index, self.cursor_index
             self.text_before=self.text.get(1.0,self.firstSelection_index)
             self.text_cursor=self.text.get(self.firstSelection_index,self.cursor_index)
             self.text_after=self.text.get(self.cursor_index,END)
@@ -348,7 +377,10 @@ class UI(Frame):
         if self.index>0:
             self.index-=1
             self.display()
-            self.back=[]
+            if self.index%10==0:
+				self.export_file()
+            self.text_ret.delete(1.0, Tkinter.END)
+            self.text_ret.insert(END,len(self.file_buff)-self.index+1)
         else:
             tkMessageBox.showinfo("警告！", "已经到第一句，请继续标注下一句或者导出文件！")
     #下一句
@@ -356,14 +388,21 @@ class UI(Frame):
         #print self.process_line(self.text.get(0.0,END))
         self.ann_buff[self.index]=self.text.get(0.0,END)
         #self.file_buff[self.index]=self.text.get(0.0,END)
-        if self.index<len(self.file_buff)-1:
+        if self.index<len(self.file_buff):
             self.index+=1
             self.display()
-            self.back=[]
+            if self.index%10==0:
+				self.export_file()
+            if self.index==len(self.file_buff)-1:
+				self.export_file()
+            self.text_ret.delete(1.0, Tkinter.END)
+            self.text_ret.insert(END,len(self.file_buff)-self.index+1)
+			
         else:
             tkMessageBox.showinfo("警告！", "已经到最后一句，请继续标注上一句或者导出文件！")
 
     def info_display(self):
+        self.text1.delete(1.0, Tkinter.END)
         for key,color in zip(self.entityinfo,self.color_index):
             self.text1.insert(END,key+'\t\t'+self.entityinfo[key]+'\n',color)
 			
@@ -394,6 +433,7 @@ class UI(Frame):
     #读取需要进行实体标注的文件，并以列表形式存储
     def readFile(self,src):
         num=0
+        self.file_buff=[]
         with open(src,'r') as f_r:
             for line in f_r:
                 #line=line.strip().decode(chardet.detect(line)['encoding'])
@@ -403,6 +443,9 @@ class UI(Frame):
                     self.backdict[num]=[]
                     self.file_buff.append(self.prepro(line,num))
                     num+=1
+            self.text_sum.delete(1.0, Tkinter.END)
+            self.text_sum.insert(END,len(self.file_buff))
+            self.index=0
         pass
         #print len(self.file_buff)
     #将标注过的文本转化成标签形式
@@ -419,7 +462,7 @@ class UI(Frame):
                         s+=w_tmp[0].strip()+u'/O'+u' '
                     else:
                         pass
-                    print w_tmp[1]
+                    #print w_tmp[1]
                     ind=w_tmp[1].index(u'#')
                     label=self.pos_label[self.entities.index(w_tmp[1][ind+1:])]
                     s1=w_tmp[1][:ind]
@@ -448,7 +491,7 @@ class UI(Frame):
 		
 def add_color(line):
 	num_buff=[]
-	print line
+	#print line
 	if u'[@' not in line:
 		pass
 	else:
@@ -459,7 +502,7 @@ def add_color(line):
 		for w in tmp:
 			if u'*]' in w:
 				start=num
-				print w
+				#print w
 				end=num+len(u'[@')+w.index(u'*]')+2
 				entity=w[w.index(u'#')+1:w.index(u'*]')]
 				num_buff.append(['1.'+str(start),'1.'+str(end),entity])

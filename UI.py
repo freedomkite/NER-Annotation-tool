@@ -31,9 +31,6 @@ class UI(Frame):
             u"人名", u"地名", u"机构名", u"装备名", u"事件名", u"日期", u"数量"
         ]
         self.entityinfo={
-            self.entities[1]:u"地点，城市名，等",
-            self.entities[2]: u"组织名，如郑州大学，国务院，新华社等",
-            self.entities[5]: u"8辆，等",
             self.entities[0]:u"人名：张三，李四，王五，麻六等",
             self.entities[1]:u"地点名：郑州市，北京市，青岛市，杭州市，郑东新区等",
             self.entities[2]: u"组织名：郑州大学，国务院，新华社等",
@@ -74,10 +71,10 @@ class UI(Frame):
         self.label=Label(self.master,font=(None,15,"bold"),text="需要实体标注的文本：")
         self.label.grid(row=0,column=0,columnspan=5,rowspan=1)
         self.label1 = Label(self.master, font=(None, 10,"bold"))
-        self.label1.grid(row=0,column=1,columnspan=100,rowspan=1)
+        self.label1.grid(row=0,column=3,columnspan=100,rowspan=1)
 
         self.text=Text(self.master,font=(None,15),width=100,height=15)
-        self.text.grid(row=2,column=0,columnspan=30,rowspan=30,ipadx=2,ipady=2,padx=2,pady=2)#,sticky=N+S+E+W)
+        self.text.grid(row=2,column=1,columnspan=30,rowspan=30,ipadx=2,ipady=2,padx=2,pady=2)#,sticky=N+S+E+W)
 
         self.button_import = Button(self.master, text="导入文件",command=self.open_file)
         self.button_import.grid(row=2, column=35)
@@ -440,7 +437,7 @@ class UI(Frame):
             self.filename=fl
             #self.text.insert(END, text)
             #print chardet.detect(fl).items()
-            labe_name=u"目前正在进行标注文件为:"+fl
+            labe_name=u"标注文件为:"+fl
             self.label1.config(text=labe_name)
             # #self.setNameLabel("File: " + fl)
             # #self.setDisplay()

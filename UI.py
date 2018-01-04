@@ -22,22 +22,25 @@ class UI(Frame):
         #self.num=StringVar()
         #实体标签
         self.label=['B','I','O']
-        self.pos_label=['Nr','Ns','Ni','Nt','Nd','Nm','Np']
+        self.pos_label=['Nh','Ns','Ni','Ne','Na','Nt','Nm']
 		#用于存储撤销信息
         self.backdict={}
 		
         #参考实体信息
         self.entities = [
-            u"人名", u"地名", u"机构名", u"时间", u"日期", u"数量", u"百分比"
+            u"人名", u"地名", u"机构名", u"装备名", u"事件名", u"日期", u"数量"
         ]
         self.entityinfo={
-            self.entities[0]:u"常见人名，",
             self.entities[1]:u"地点，城市名，等",
             self.entities[2]: u"组织名，如郑州大学，国务院，新华社等",
-            self.entities[3]: u"7点50分，等",
-            self.entities[4]: u"7月8日，等",
             self.entities[5]: u"8辆，等",
-            self.entities[6]: u"76%，等"
+            self.entities[0]:u"人名：张三，李四，王五，麻六等",
+            self.entities[1]:u"地点名：郑州市，北京市，青岛市，杭州市，郑东新区等",
+            self.entities[2]: u"组织名：郑州大学，国务院，新华社等",
+            self.entities[3]: u"装备名：歼-20，歼-10、歼-11，PL-21导弹，346型相控阵雷达等",
+            self.entities[4]: u"事件名：暂不进行标注等",
+            self.entities[5]: u"日期：7月8日等",
+            self.entities[6]: u"数量：76%，等"
         }
         #颜色信息
         self.color=['red','yellow','blue','green','brown','orange','purple']
@@ -69,7 +72,7 @@ class UI(Frame):
         # self.pack(fill=BOTH, expand=True)
         #首先定义文本显示框
         self.label=Label(self.master,font=(None,15,"bold"),text="需要实体标注的文本：")
-        self.label.grid()
+        self.label.grid(row=0,column=0,columnspan=5,rowspan=1)
         self.label1 = Label(self.master, font=(None, 10,"bold"))
         self.label1.grid(row=0,column=1,columnspan=100,rowspan=1)
 
@@ -80,9 +83,9 @@ class UI(Frame):
         self.button_import.grid(row=2, column=35)
         self.button_export = Button(self.master, text="导出文件",command=self.export_file)
         self.button_export.grid(row=4, column=35)
-        self.button_save=Button(self.master,text="保留按钮",command=self.back_action)
+        self.button_save=Button(self.master,text="顺序撤销",command=self.back_order)
         self.button_save.grid(row=6,column=35)
-        self.button_back = Button(self.master, text="撤销操作",command=self.back_random)
+        self.button_back = Button(self.master, text="选择撤销",command=self.back_random)
         self.button_back.grid(row=8, column=35)
         self.button_next=Button(self.master,text="上一句",command=self.fore_button)
         self.button_next.grid(row=10,column=35)
@@ -101,33 +104,33 @@ class UI(Frame):
 
         #实体类型, E 右对齐，W 左对齐，
         self.label = Label(self.master,font=(None,15,"bold"), text="实体类型选择：")
-        self.label.grid(sticky=N+W)
+        self.label.grid(columnspan=3,rowspan=1,sticky=N+W)
 
         self.button1=Button(self.master,text=u"A:"+self.entities[0],width=15,command=self.button_people)
-        self.button1.grid(row=45,column=0,sticky=N+E )
+        self.button1.grid(row=45,column=2,sticky=N+E )
         self.button2 = Button(self.master, text=u"B:"+self.entities[1],width=15,command=self.button_place)
-        self.button2.grid(row=45, column=2, sticky=N)
+        self.button2.grid(row=45, column=4, sticky=N)
         self.button3 = Button(self.master, text=u"C:"+self.entities[2],width=15,command=self.button_organize)
-        self.button3.grid(row=45, column=4, sticky=N)
+        self.button3.grid(row=45, column=6, sticky=N)
         self.button4 = Button(self.master, text=u"D:"+self.entities[3],width=15,command=self.button_time)
-        self.button4.grid(row=45, column=6, sticky=N)
+        self.button4.grid(row=45, column=8, sticky=N)
         self.button5 = Button(self.master, text=u"E:"+self.entities[4],width=15,command=self.button_date)
-        self.button5.grid(row=45, column=8, sticky=N)
+        self.button5.grid(row=45, column=10, sticky=N)
         self.button6 = Button(self.master, text=u"F:"+self.entities[5],width=15,command=self.button_number)
-        self.button6.grid(row=45, column=10, sticky=N)
+        self.button6.grid(row=45, column=12, sticky=N)
         self.button7 = Button(self.master, text=u"G:"+self.entities[6],width=15,command=self.button_percege)
-        self.button7.grid(row=45, column=12, sticky=N)
+        self.button7.grid(row=45, column=14, sticky=N)
         #实体类型参考：
         self.label = Label(self.master,font=(None,15,"bold"), text="实体类型说明：")
-        self.label.grid(sticky=N+W)
+        self.label.grid(columnspan=3,rowspan=1,sticky=N+W)
         # self.var = StringVar()
         # self.lb = Listbox(self.master, width=80, height=12, selectmode=BROWSE, font=("Arial", 10), listvariable=self.var)
         # # self.lb.bind('<ButtonRelease-1>',self.print_item)
         # self.lb.grid(row=47,column=1)
         # self.lb.bind('<Double-Button-1>', self.print_item)
-        self.text1 = Text(self.master, font=(None,15,"bold"),width=100, height=13)
+        self.text1 = Text(self.master, font=(None,15,"bold"),width=100, height=10)
         # self.text1.grid(row=47,column=1)
-        self.text1.grid(row=47, column=0, columnspan=30, rowspan=30, ipadx=2, ipady=2, padx=2, pady=2)  # ,sticky=N+S+E+W)
+        self.text1.grid(row=47, column=2, columnspan=30, rowspan=30, ipadx=2, ipady=2, padx=2, pady=2)  # ,sticky=N+S+E+W)
         # self.label2 = Label(self.master, text="软件说明：\n")
         # self.label2.grid(row=2, column=38)
 
@@ -145,7 +148,7 @@ class UI(Frame):
         # self.text.tag_config('e', background="white", foreground="black")
         # self.text.tag_config('f', background="white", foreground="orange")
         # self.text.tag_config('g', background="white", foreground="purple")
-        self.text.bind('<Control-Key-z>', self.back_history)
+        self.text.bind('<Control-Key-z>', self.back_order)
         self.text.bind('<Control-Key-a>', self.key_button_people)
         self.text.bind('<Control-Key-b>', self.key_button_place)
         self.text.bind('<Control-Key-c>', self.key_button_organize)
@@ -153,7 +156,23 @@ class UI(Frame):
         self.text.bind('<Control-Key-e>', self.key_button_date)
         self.text.bind('<Control-Key-f>', self.key_button_number)
         self.text.bind('<Control-Key-g>', self.key_button_percege)
+        self.text.bind('<Control-Key-s>', self.export_file)
+		
         #self.text.bind('', self.textReturnEnter)
+    def back_order(self):
+		sent=self.text.get(0.0,END)
+		num_buff=add_color(sent)
+		if len(num_buff)>0:
+			ind=num_buff[-1]
+			ind1=int(ind[0].split('.')[1])
+			ind2=int(ind[1].split('.')[1])
+			word=sent[ind1:ind2]
+			word=word[word.index('[@')+2:word.index('#')]
+			self.text.delete(ind[0],ind[1])
+			self.text.insert(ind[0],word)
+		else:
+			pass
+		
     def back_random(self):
 		sent=self.text.get(0.0,END)
 		num_buff=add_color(sent)
@@ -216,8 +235,6 @@ class UI(Frame):
 		return s					
 
         #self.text.bind("")
-    def back_history(self,event):
-        self.back_action()
 
     # 百分比
     def key_button_percege(self,event):
@@ -380,7 +397,7 @@ class UI(Frame):
             if self.index%10==0:
 				self.export_file()
             self.text_ret.delete(1.0, Tkinter.END)
-            self.text_ret.insert(END,len(self.file_buff)-self.index+1)
+            self.text_ret.insert(END,len(self.file_buff)-self.index)
         else:
             tkMessageBox.showinfo("警告！", "已经到第一句，请继续标注下一句或者导出文件！")
     #下一句
@@ -396,7 +413,7 @@ class UI(Frame):
             if self.index==len(self.file_buff)-1:
 				self.export_file()
             self.text_ret.delete(1.0, Tkinter.END)
-            self.text_ret.insert(END,len(self.file_buff)-self.index+1)
+            self.text_ret.insert(END,len(self.file_buff)-self.index)
 			
         else:
             tkMessageBox.showinfo("警告！", "已经到最后一句，请继续标注上一句或者导出文件！")
@@ -446,6 +463,8 @@ class UI(Frame):
             self.text_sum.delete(1.0, Tkinter.END)
             self.text_sum.insert(END,len(self.file_buff))
             self.index=0
+            self.text_ret.delete(1.0, Tkinter.END)
+            self.text_ret.insert(END,len(self.file_buff)-self.index)
         pass
         #print len(self.file_buff)
     #将标注过的文本转化成标签形式
@@ -557,7 +576,7 @@ def likecrf(labels):
 def main():
     app=UI(Tk())
     app.master.title("命名实体人工标注工具")
-    app.master.geometry("1300x700+200+200")
+    app.master.geometry("1300x650+10+10")
     app.mainloop()
     #root = Tk()
     #root.title("命名实体人工标注工具")

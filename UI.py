@@ -363,8 +363,10 @@ class UI(Frame):
             tkMessageBox.showinfo("警告！", "已经到最后一句，请继续标注上一句或者导出文件！")
 
     def info_display(self):
-        for key in self.entityinfo:
-            self.text1.insert(END,key+'\t\t'+self.entityinfo[key]+'\n')
+            self.text1.insert(END,key+'\t\t'+self.entityinfo[key]+'\n',color)
+			
+			
+			
     '''响应导入文件按钮，选择需要标注的文件，并进行读取，同时将文本路径显示在窗口顶端，将文本第一行导入文本框'''
     def open_file(self):
         ftypes = [('all files', '.*'), ('text files', '.txt')]

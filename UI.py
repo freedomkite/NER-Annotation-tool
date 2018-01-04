@@ -129,6 +129,7 @@ class UI(Frame):
         self.text.bind("<B1-Motion>",self.leftAction)
         for col_ind,col in zip(self.color_index,self.color):
             self.text.tag_config(col_ind, background="white", foreground=col)
+            self.text1.tag_config(col_ind, background="white", foreground=col)
         # self.text.tag_config('b', background="white", foreground="yellow")
         # self.text.tag_config('c', background="white", foreground="blue")
         # self.text.tag_config('d', background="white", foreground="green")
@@ -363,6 +364,7 @@ class UI(Frame):
             tkMessageBox.showinfo("警告！", "已经到最后一句，请继续标注上一句或者导出文件！")
 
     def info_display(self):
+        for key,color in zip(self.entityinfo,self.color_index):
             self.text1.insert(END,key+'\t\t'+self.entityinfo[key]+'\n',color)
 			
 			

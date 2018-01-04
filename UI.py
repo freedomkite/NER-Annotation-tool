@@ -417,8 +417,8 @@ class UI(Frame):
 
     def info_display(self):
         self.text1.delete(1.0, Tkinter.END)
-        for key,color in zip(self.entityinfo,self.color_index):
-            self.text1.insert(END,key+'\t\t'+self.entityinfo[key]+'\n',color)
+        for color in self.color_index:
+            self.text1.insert(END,self.entities[self.color_index.index(color)]+'\t\t'+self.entityinfo[self.entities[self.					color_index.index(color)]]+'\n',color)
 			
 			
 			

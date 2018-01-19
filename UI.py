@@ -28,7 +28,7 @@ class UI(Frame):
 		
         #参考实体信息
         self.entities = [
-            u"人名", u"地名", u"机构名", u"装备名", u"事件名", u"日期", u"数量"
+            u"人名", u"地名", u"机构名", u"装备名", u"事件名", u"时间", u"数量"
         ]
         self.entityinfo={
             self.entities[0]:u"人名：张三，李四，王五，麻六等",
@@ -36,7 +36,7 @@ class UI(Frame):
             self.entities[2]: u"组织名：郑州大学，国务院，新华社等",
             self.entities[3]: u"装备名：歼-20，歼-10、歼-11，PL-21导弹，346型相控阵雷达等",
             self.entities[4]: u"事件名：暂不进行标注等",
-            self.entities[5]: u"日期：7月8日等",
+            self.entities[5]: u"时间：7月8日等",
             self.entities[6]: u"数量：76%，等"
         }
         #颜色信息
